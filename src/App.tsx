@@ -28,25 +28,29 @@ function App() {
     useEffect(() => {
             if (!start) return;
 
-            const segmenter = new Intl.Segmenter('ja', {granularity: 'word'})
+        const segmenter = new Intl.Segmenter('ja', { granularity: 'word' });
 
-        // Remove everything that is not a japanese character
+        // Elimina lo que no sea carácter japonés
         const cleanText = text.replace(/[^ぁ-んァ-ン一-龥]/g, '').replace(/\s+/g, '').replace(" ","");
 
-            const parsedText = segmenter.segment(cleanText)
-            const words = Array.from(parsedText, segment => segment.segment)
+        const parsedText = segmenter.segment(cleanText);
+        const words = Array.from(parsedText, segment => segment.segment);
 
             let index = 0;
-            const interval = setInterval(() => {
+        let interval: NodeJS.Timeout;
+
+        const showNextWord = () => {
                 if (index < words.length) {
                     setCurrentWord(words[index]);
+                const chars = words[index].length || 1;
                     index++;
-                } else {
-                    clearInterval(interval);
+                interval = setTimeout(showNextWord, (3600 / charactersPerHour) * 1000 * chars);
                 }
-            }, (3600 / charactersPerHour) * 1000);
+        };
 
-            return () => clearInterval(interval);
+        showNextWord();
+
+        return () => clearTimeout(interval);
         }, [start, text, charactersPerHour]);
 
     function resetText() {
