@@ -12,11 +12,11 @@ function App() {
     const [start, setStart] = useState(false)
 
     useEffect(() => {
-        if("Intl" in window === false || !('Segmenter' in Intl))
+        if(!("Intl" in window) || !('Segmenter' in Intl))
             return console.error('Intl.Segmenter is not supported in this browser.');
 
         const segmenter = new Intl.Segmenter('ja', {granularity: 'word'})
-        const parsedText = segmenter.segment(text)
+        const parsedText = segmenter.segment(text.replace(/\n/g, '').replace(" ",""));
         const words = Array.from(parsedText, segment => segment.segment)
 
         setCurrentWord(words[0])
